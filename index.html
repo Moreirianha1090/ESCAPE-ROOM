@@ -2,10 +2,909 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>ESCAPE-ROOM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room: Dashboard Educacional & Desafios Matemáticos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        glacier: {
+                            bg: '#f0f7ff',
+                            card: '#ffffff',
+                            border: '#bae6fd',
+                            primary: '#0284c7',
+                            primaryHover: '#0369a1',
+                            accent: '#06b6d4',
+                            text: '#0f172a',
+                            muted: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #f0f7ff;
+            color: #0f172a;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(14, 165, 233, 0.12) 0%, transparent 40%);
+        }
+        .light-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid #bae6fd;
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1), 0 8px 10px -6px rgba(14, 165, 233, 0.05);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f0f7ff; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+    </style>
 </head>
-<body>
-    <h1>Bem-vindo ao ESCAPE-ROOM</h1>
-    <p>Esta é nossa sala de aula de interação matemática.</p>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-6 select-none">
+
+    <!-- CABEÇALHO COM SELEÇÃO DE PERFIL / SALA -->
+    <header class="max-w-6xl mx-auto w-full flex flex-wrap justify-between items-center gap-4 light-card p-4 rounded-2xl mb-4">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('screen-login')">
+            <div class="w-10 h-10 rounded-xl bg-sky-100 border border-sky-300 flex items-center justify-center text-sky-600 font-bold font-orbitron text-xl shadow-sm">
+                ❄️
+            </div>
+            <div>
+                <h1 class="font-orbitron font-extrabold text-lg sm:text-xl text-sky-950">
+                    MATH ESCAPE CLASSROOM
+                </h1>
+                <p class="text-xs text-sky-700 font-semibold">Painel de Aprendizagem & Desafios BNCC</p>
+            </div>
+        </div>
+
+        <div id="user-session-bar" class="flex items-center space-x-3">
+            <span id="user-role-badge" class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-sky-50 text-sky-800 border-sky-200 uppercase">
+                Não Conectado
+            </span>
+            <button onclick="logout()" id="btn-logout" class="hidden px-3 py-1.5 text-xs font-bold rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition">
+                Sair
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="max-w-6xl mx-auto w-full flex-1 flex flex-col justify-center">
+
+        <!-- TELA 0: SELEÇÃO DE PERFIL / ENTRADA -->
+        <section id="screen-login" class="light-card rounded-2xl p-6 sm:p-10 space-y-8 max-w-2xl mx-auto w-full">
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl font-orbitron font-bold text-sky-950">Bem-vindo à Sala Virtual</h2>
+                <p class="text-sm text-slate-600">Escolha como você deseja acessar a plataforma:</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Acesso do Aluno -->
+                <div class="p-6 bg-sky-50/60 rounded-2xl border border-sky-200 space-y-4 hover:border-sky-400 transition">
+                    <div class="text-3xl">🎓</div>
+                    <h3 class="font-orbitron font-bold text-lg text-sky-900">Sou Aluno</h3>
+                    <p class="text-xs text-slate-600">Entre com seu nome e código da sala fornecido pelo professor.</p>
+                    
+                    <input type="text" id="student-name" placeholder="Seu Nome Completo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-sky-500">
+                    <input type="text" id="student-room-code" placeholder="Código da Sala (Ex: MATH7A)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm uppercase font-mono focus:outline-none focus:border-sky-500">
+                    
+                    <button onclick="loginAsStudent()" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-orbitron font-bold text-sm rounded-xl transition shadow-md">
+                        ENTRAR NA SALA
+                    </button>
+                </div>
+
+                <!-- Acesso do Professor -->
+                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 hover:border-slate-400 transition">
+                    <div class="text-3xl">🔑</div>
+                    <h3 class="font-orbitron font-bold text-lg text-slate-900">Sou Professor</h3>
+                    <p class="text-xs text-slate-600">Acesse o painel para criar turmas, monitorar notas e acompanhar o desempenho.</p>
+                    
+                    <input type="password" id="teacher-pass" placeholder="Senha do Professor (padrão: admin)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-slate-500">
+                    
+                    <button onclick="loginAsTeacher()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-orbitron font-bold text-sm rounded-xl transition shadow-md">
+                        ACESSAR DASHBOARD
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 1: DASHBOARD DO PROFESSOR -->
+        <section id="screen-teacher-dashboard" class="hidden space-y-6">
+            
+            <!-- Resumo e Métricas Principais -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div class="light-card p-4 rounded-xl flex items-center space-x-4">
+                    <div class="p-3 bg-sky-100 text-sky-700 rounded-xl text-2xl">👥</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Total de Alunos</p>
+                        <h4 id="dash-total-students" class="text-2xl font-orbitron font-bold text-sky-950">0</h4>
+                    </div>
+                </div>
+
+                <div class="light-card p-4 rounded-xl flex items-center space-x-4">
+                    <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl text-2xl">📈</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Média da Turma</p>
+                        <h4 id="dash-avg-score" class="text-2xl font-orbitron font-bold text-emerald-600">0%</h4>
+                    </div>
+                </div>
+
+                <div class="light-card p-4 rounded-xl flex items-center space-x-4">
+                    <div class="p-3 bg-amber-100 text-amber-700 rounded-xl text-2xl">⭐</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Fases Concluídas</p>
+                        <h4 id="dash-completed-phases" class="text-2xl font-orbitron font-bold text-amber-600">0</h4>
+                    </div>
+                </div>
+
+                <div class="light-card p-4 rounded-xl flex items-center space-x-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl text-2xl">🏫</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Código da Sala</p>
+                        <h4 id="dash-room-code" class="text-2xl font-orbitron font-bold text-indigo-600">MATH7A</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Monitoramento e Alunos -->
+            <div class="light-card rounded-2xl p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-sky-100 pb-4">
+                    <div>
+                        <h3 class="text-xl font-orbitron font-bold text-sky-950">Desempenho dos Alunos</h3>
+                        <p class="text-xs text-slate-600">Acompanhamento em tempo real das atividades e pontuações.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportDataCSV()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-xl hover:bg-emerald-100">
+                            📥 Exportar Relatório (CSV)
+                        </button>
+                        <button onclick="clearClassData()" class="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl hover:bg-rose-100">
+                            🗑️ Limpar Turma
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-sky-50 text-sky-900 border-b border-sky-200 font-orbitron">
+                                <th class="p-3">Aluno</th>
+                                <th class="p-3">Fase Atual</th>
+                                <th class="p-3">Fases Concluídas</th>
+                                <th class="p-3">Pontuação</th>
+                                <th class="p-3">Progresso (%)</th>
+                                <th class="p-3 text-center">Ações / Correção</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-students-tbody" class="divide-y divide-sky-100 text-slate-700">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 2: SELEÇÃO DE FASES (ALUNO) -->
+        <section id="screen-levels" class="hidden light-card rounded-2xl p-4 sm:p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-sky-100 pb-4">
+                <div>
+                    <h2 class="text-2xl font-orbitron font-bold text-sky-950 flex items-center gap-2">
+                        <span>🗺️ Seleção de Fases</span>
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-1">
+                        Cada fase gera 5 questões. <span class="text-sky-700 font-bold">Cada questão correta revela 1 algarismo do código final de 5 dígitos!</span>
+                    </p>
+                </div>
+                <div class="bg-sky-50 px-4 py-2 rounded-xl border border-sky-200 flex items-center space-x-3 shadow-sm">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Progresso:</span>
+                    <span id="overall-progress-text" class="font-orbitron font-bold text-sky-600 text-lg">0 / 50</span>
+                </div>
+            </div>
+
+            <!-- GRID DAS 50 FASES -->
+            <div id="levels-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-3 max-h-[60vh] overflow-y-auto p-1">
+                <!-- Gerado via JS -->
+            </div>
+        </section>
+
+        <!-- TELA 3: JOGO / QUESTÕES (ALUNO) -->
+        <section id="screen-game" class="hidden flex-col gap-5">
+
+            <!-- BARRA DE CABEÇALHO DA FASE -->
+            <div class="light-card p-4 rounded-xl flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <button onclick="showScreen('screen-levels')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1 font-bold">
+                        ← Voltar ao Mapa
+                    </button>
+                    <button onclick="confirmRestartPhase()" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg border border-amber-300 transition flex items-center gap-1 font-bold" title="Reiniciar fase atual com novos desafios">
+                        🔄 Reiniciar Fase
+                    </button>
+                    <span id="level-title-badge" class="font-orbitron font-bold text-sky-900 text-lg sm:text-xl">FASE 1</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span id="axis-badge" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-sky-300 bg-sky-50 text-sky-800 uppercase tracking-wider">
+                        Eixo: Carregando...
+                    </span>
+                </div>
+            </div>
+
+            <!-- INDICADOR DE PROGRESSO DAS 5 QUESTÕES COM EXIBIÇÃO DE ALGARISMOS -->
+            <div class="light-card p-3 rounded-xl flex flex-wrap justify-around items-center text-xs font-bold gap-1 sm:gap-2">
+                <div id="step-pill-0" class="px-3 py-1.5 rounded-lg border bg-sky-600 text-white border-sky-700 shadow-sm">Q1</div>
+                <div id="step-pill-1" class="px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200">Q2</div>
+                <div id="step-pill-2" class="px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200">Q3</div>
+                <div id="step-pill-3" class="px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200">Q4</div>
+                <div id="step-pill-4" class="px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200">Q5</div>
+                <div id="step-pill-5" class="px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200 flex items-center gap-1">🔑 Liberação</div>
+            </div>
+
+            <div id="card-question" class="light-card rounded-2xl p-6 space-y-6 relative overflow-hidden">
+                
+                <!-- Enunciado do Desafio -->
+                <div class="space-y-4">
+                    <div id="question-text" class="text-base sm:text-lg text-slate-800 leading-relaxed font-semibold bg-sky-50/70 p-5 rounded-xl border border-sky-200">
+                        <!-- Pergunta carregada dinamicamente -->
+                    </div>
+
+                    <!-- Dica -->
+                    <div id="hint-box" class="hidden bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-amber-900 text-sm">
+                        <strong>💡 DICA:</strong> <span id="hint-text">...</span>
+                    </div>
+                </div>
+
+                <!-- Input e Ações -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Sua Resposta (Apenas o número):</label>
+                        <button onclick="toggleHint()" class="text-xs text-sky-700 bg-sky-100 border border-sky-300 px-3 py-1 rounded-lg hover:bg-sky-200 transition font-bold">
+                            💡 Ver Dica
+                        </button>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="number" step="any" id="user-input" placeholder="Digite a resposta numérica..." class="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-lg font-orbitron focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition" onkeyup="if(event.key==='Enter') submitAnswer()">
+                        <button onclick="submitAnswer()" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-orbitron font-bold text-base rounded-xl transition shadow-md shadow-sky-600/20">
+                            VERIFICAR QUESTÃO ►
+                        </button>
+                    </div>
+                    <p id="feedback-msg" class="text-sm font-bold min-h-[22px] transition-all duration-300"></p>
+                </div>
+
+                <!-- NAVEGAÇÃO DE FASES -->
+                <div class="border-t border-sky-100 pt-4 flex justify-between items-center text-xs">
+                    <button id="btn-prev-level" onclick="prevLevel()" class="text-slate-500 hover:text-sky-700 font-bold transition disabled:opacity-30 disabled:cursor-not-allowed">
+                        ◄ Fase Anterior
+                    </button>
+                    <span id="level-counter-footer" class="text-slate-500 font-mono font-bold">Fase 1 - Questão 1 de 5</span>
+                    <button id="btn-next-level" onclick="nextLevel()" class="text-slate-500 hover:text-sky-700 font-bold transition disabled:opacity-30 disabled:cursor-not-allowed">
+                        Próxima Fase ►
+                    </button>
+                </div>
+            </div>
+
+            <div id="card-secret" class="hidden light-card rounded-2xl p-6 space-y-6">
+                <div class="text-center space-y-3">
+                    <div class="inline-block p-4 rounded-full bg-sky-100 border border-sky-300 text-sky-600">
+                        🔒
+                    </div>
+                    <h3 class="text-xl font-orbitron font-bold text-sky-950">Todas as 5 Questões Concluídas!</h3>
+                    <p class="text-sm text-slate-700 max-w-md mx-auto">
+                        Excelente! Você anotou os <strong>5 algarismos</strong> obtidos após cada questão correta?
+                    </p>
+                    <div id="dynamic-code-display" class="inline-block font-orbitron font-black text-3xl text-sky-700 bg-sky-50 px-8 py-3 rounded-xl border border-sky-300 tracking-widest shadow-inner">
+                        -----
+                    </div>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                        Junte os 5 algarismos anotados na ordem das questões (Q1 a Q5) para liberar a próxima fase!
+                    </p>
+                </div>
+
+                <div class="space-y-3 max-w-md mx-auto">
+                    <label class="block text-xs font-bold text-slate-600 uppercase text-center">Digite o Código de 5 Algarismos:</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="secret-code-input" maxlength="5" placeholder="EX: 48192" class="flex-1 bg-white border border-sky-300 rounded-xl px-4 py-3 text-center text-slate-900 text-2xl font-orbitron tracking-widest focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition" onkeyup="if(event.key==='Enter') submitSecretCode()">
+                        <button onclick="submitSecretCode()" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-orbitron font-bold text-base rounded-xl transition shadow-md shadow-sky-600/20">
+                            LIBERAR FASE
+                        </button>
+                    </div>
+                    <p id="secret-feedback-msg" class="text-sm font-bold text-center min-h-[22px]"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 4: VITÓRIA -->
+        <section id="screen-victory" class="hidden light-card rounded-2xl p-8 sm:p-12 text-center space-y-6">
+            <div class="inline-block p-5 rounded-full bg-sky-100 border border-sky-300 text-sky-600 mb-2">
+                <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-orbitron font-black text-sky-950">
+                MESTRE DA MATEMÁTICA!
+            </h2>
+
+            <p class="text-slate-700 text-lg max-w-lg mx-auto font-medium">
+                Incrível! Você superou todos os cálculos, anotou todos os códigos e completou com sucesso as <strong>50 fases</strong> da jornada!
+            </p>
+
+            <div class="pt-4">
+                <button onclick="showScreen('screen-levels')" class="px-8 py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-orbitron font-bold rounded-xl transition shadow-lg shadow-sky-600/20">
+                    🗺️ VOLTAR AO MAPA DE FASES
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL CONFIRMAÇÃO -->
+    <div id="modal-confirm" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white border border-sky-300 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+            <div class="text-3xl text-amber-500">⚠️</div>
+            <h3 id="confirm-title" class="font-orbitron font-bold text-lg text-sky-950">Confirmação</h3>
+            <p id="confirm-msg" class="text-sm text-slate-600">Tem certeza?</p>
+            <div class="flex gap-3 pt-2">
+                <button id="confirm-btn-no" class="flex-1 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold text-sm transition">Cancelar</button>
+                <button id="confirm-btn-yes" class="flex-1 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-orbitron font-bold text-sm rounded-xl transition">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT DA APLICAÇÃO -->
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // GERADOR DE QUESTÕES BNCC
+        const QUESTION_TEMPLATES = [
+            function generateNumbers(level) {
+                const type = getRandomInt(1, 4);
+                let text, ans, hint;
+                if (type === 1) {
+                    const a = getRandomInt(5, 15 + level);
+                    const b = getRandomInt(2, 6 + Math.floor(level / 5));
+                    const c = getRandomInt(3, 10 + Math.floor(level / 5));
+                    ans = a + (b * c);
+                    text = `Calcule o valor da expressão: ${a} + (${b} × ${c})`;
+                    hint = `Resolva primeiro a multiplicação (${b} × ${c}) e depois some ${a}.`;
+                } else if (type === 2) {
+                    const perc = getRandomInt(1, 8) * 10;
+                    const base = getRandomInt(2, 20) * 10;
+                    ans = (perc / 100) * base;
+                    text = `Quanto é ${perc}% de R$ ${base},00?`;
+                    hint = `Multiplique ${perc} por ${base} e divida por 100.`;
+                } else if (type === 3) {
+                    const baseNum = getRandomInt(2, 5);
+                    const exp = getRandomInt(2, 3);
+                    const add = getRandomInt(5, 20);
+                    ans = Math.pow(baseNum, exp) + add;
+                    text = `Qual é o valor de ${baseNum}<sup>${exp}</sup> + ${add}?`;
+                    hint = `Calcule ${baseNum} elevado a ${exp} e some ${add}.`;
+                } else {
+                    const tempInitial = getRandomInt(-10, 0);
+                    const rise = getRandomInt(12, 25);
+                    ans = tempInitial + rise;
+                    text = `A temperatura era de ${tempInitial} °C e subiu ${rise} °C. Qual é a temperatura final em °C?`;
+                    hint = `Some ${tempInitial} com ${rise}.`;
+                }
+                const digit = getRandomInt(1, 9);
+                return { axis: "Números", icon: "🔢", text, answer: ans, hint, codeDigit: digit };
+            },
+
+            function generateAlgebra(level) {
+                const type = getRandomInt(1, 3);
+                let text, ans, hint;
+                if (type === 1) {
+                    const xVal = getRandomInt(2, 12 + Math.floor(level / 3));
+                    const coeff = getRandomInt(2, 6);
+                    const constVal = getRandomInt(4, 20);
+                    const result = (coeff * xVal) + constVal;
+                    ans = xVal;
+                    text = `Encontre o valor de x na equação: ${coeff}x + ${constVal} = ${result}`;
+                    hint = `Subtraia ${constVal} de ${result} e divida por ${coeff}.`;
+                } else if (type === 2) {
+                    const aVal = getRandomInt(3, 10);
+                    const mult = getRandomInt(2, 5);
+                    const sub = getRandomInt(1, 10);
+                    ans = (mult * aVal) - sub;
+                    text = `Dada a expressão ${mult}a - ${sub}, qual é o valor numérico para a = ${aVal}?`;
+                    hint = `Substitua 'a' por ${aVal}: faça (${mult} × ${aVal}) - ${sub}.`;
+                } else {
+                    const start = getRandomInt(2, 10);
+                    const step = getRandomInt(3, 7);
+                    ans = start + 3 * step;
+                    const t1 = start;
+                    const t2 = start + step;
+                    const t3 = start + step * 2;
+                    const t5 = start + step * 4;
+                    text = `Na sequência (${t1}, ${t2}, ${t3}, X, ${t5}...), qual é o valor do termo X?`;
+                    hint = `Descubra a razão da sequência e adicione ao 3º termo.`;
+                }
+                const digit = getRandomInt(1, 9);
+                return { axis: "Álgebra", icon: "📐", text, answer: ans, hint, codeDigit: digit };
+            },
+
+            function generateGeometry(level) {
+                const type = getRandomInt(1, 3);
+                let text, ans, hint;
+                if (type === 1) {
+                    const ang1 = getRandomInt(30, 80);
+                    const ang2 = getRandomInt(30, 80);
+                    ans = 180 - (ang1 + ang2);
+                    text = `Um triângulo possui dois ângulos internos de ${ang1}° e ${ang2}°. Quanto mede o terceiro ângulo em graus?`;
+                    hint = `A soma dos ângulos internos de um triângulo é 180°.`;
+                } else if (type === 2) {
+                    const side = getRandomInt(4, 15);
+                    ans = side * 4;
+                    text = `Qual é o perímetro em cm de um quadrado que tem área de ${side * side} cm²?`;
+                    hint = `O lado é √${side * side} = ${side} cm. Perímetro = 4 × lado.`;
+                } else {
+                    const base = getRandomInt(6, 16);
+                    const height = getRandomInt(4, 12);
+                    ans = base * height;
+                    text = `Qual é a área em m² de um retângulo de base ${base} m e altura ${height} m?`;
+                    hint = `Área = base × altura.`;
+                }
+                const digit = getRandomInt(1, 9);
+                return { axis: "Geometria", icon: "🔺", text, answer: ans, hint, codeDigit: digit };
+            },
+
+            function generateMeasures(level) {
+                const type = getRandomInt(1, 3);
+                let text, ans, hint;
+                if (type === 1) {
+                    const hours = getRandomInt(1, 5);
+                    const extraMin = getRandomInt(1, 3) * 15;
+                    ans = (hours * 60) + extraMin;
+                    text = `Quantos minutos correspondem a ${hours} hora(s) e ${extraMin} minutos?`;
+                    hint = `Multiplique ${hours} por 60 e some ${extraMin}.`;
+                } else if (type === 2) {
+                    const kg = getRandomInt(2, 9) + 0.5;
+                    ans = kg * 1000;
+                    text = `Quantos gramas equivalem a ${kg.toString().replace('.', ',')} kg?`;
+                    hint = `Cada 1 kg possui 1.000 gramas.`;
+                } else {
+                    const edge = getRandomInt(2, 6);
+                    ans = edge * edge * edge;
+                    text = `Um reservatório cúbico possui aresta de ${edge} metros. Qual é o seu volume em m³?`;
+                    hint = `Volume do cubo = aresta × aresta × aresta (${edge}³).`;
+                }
+                const digit = getRandomInt(1, 9);
+                return { axis: "Grandezas e Medidas", icon: "📏", text, answer: ans, hint, codeDigit: digit };
+            },
+
+            function generateStatistics(level) {
+                const type = getRandomInt(1, 2);
+                let text, ans, hint;
+                if (type === 1) {
+                    const n1 = getRandomInt(5, 9);
+                    const n2 = getRandomInt(5, 9);
+                    const n3 = getRandomInt(5, 9);
+                    const n4 = getRandomInt(5, 9);
+                    const sum = n1 + n2 + n3 + n4;
+                    ans = sum / 4;
+                    text = `As notas de um estudante foram: ${n1}, ${n2}, ${n3} e ${n4}. Qual é a média aritmética?`;
+                    hint = `Some as 4 notas e divida por 4.`;
+                } else {
+                    const blue = getRandomInt(3, 8);
+                    ans = blue * 10;
+                    text = `Uma urna tem ${blue} bolas azuis e ${10 - blue} vermelhas (total de 10). Qual a chance % de tirar azul?`;
+                    hint = `Cada bola representa 10%. Multiplique ${blue} por 10.`;
+                }
+                const digit = getRandomInt(1, 9);
+                return { axis: "Probabilidade e Estatística", icon: "📊", text, answer: ans, hint, codeDigit: digit };
+            }
+        ];
+
+        // GESTÃO DE ESTADO
+        let currentUser = null; // { name, role: 'student'|'teacher', roomCode }
+        let currentLevel = 1;
+        let currentQuestionIndex = 0;
+        let unlockedLevel = 1;
+        let completedLevels = {};
+        let currentLevelQuestions = [];
+        let revealedDigits = ["?", "?", "?", "?", "?"];
+
+        function showScreen(screenId) {
+            const screens = ['screen-login', 'screen-teacher-dashboard', 'screen-levels', 'screen-game', 'screen-victory'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === screenId) {
+                        el.classList.remove('hidden');
+                        if (id === 'screen-game') el.classList.add('flex');
+                    } else {
+                        el.classList.add('hidden');
+                        if (id === 'screen-game') el.classList.remove('flex');
+                    }
+                }
+            });
+
+            if (screenId === 'screen-levels') renderLevelGrid();
+            if (screenId === 'screen-teacher-dashboard') renderTeacherDashboard();
+        }
+
+        // AUTENTICAÇÃO E SESSÃO
+        function loginAsStudent() {
+            const name = document.getElementById('student-name').value.trim();
+            const room = document.getElementById('student-room-code').value.trim().toUpperCase();
+
+            if (!name || !room) {
+                alert('Preencha seu nome e o código da sala!');
+                return;
+            }
+
+            currentUser = { name, role: 'student', roomCode: room };
+            updateSessionUI();
+            loadStudentProgress();
+            showScreen('screen-levels');
+        }
+
+        function loginAsTeacher() {
+            const pass = document.getElementById('teacher-pass').value.trim();
+            if (pass !== 'admin' && pass !== '') {
+                alert('Senha incorreta!');
+                return;
+            }
+
+            currentUser = { name: 'Professor(a)', role: 'teacher', roomCode: 'MATH7A' };
+            updateSessionUI();
+            showScreen('screen-teacher-dashboard');
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('user-session-bar').querySelector('#user-role-badge').innerText = 'Não Conectado';
+            document.getElementById('btn-logout').classList.add('hidden');
+            showScreen('screen-login');
+        }
+
+        function updateSessionUI() {
+            const badge = document.getElementById('user-role-badge');
+            const btnLogout = document.getElementById('btn-logout');
+
+            if (currentUser) {
+                badge.innerText = `${currentUser.role === 'teacher' ? '🔑 PROFESSOR' : '🎓 ALUNO'}: ${currentUser.name}`;
+                badge.className = `text-xs font-bold px-3 py-1.5 rounded-xl border uppercase ${currentUser.role === 'teacher' ? 'bg-slate-100 text-slate-800 border-slate-300' : 'bg-sky-100 text-sky-800 border-sky-300'}`;
+                btnLogout.classList.remove('hidden');
+            }
+        }
+
+        // LÓGICA DE DADOS DO BANCO DE DADOS LOCAL (LOCALSTORAGE)
+        function getStudentsData() {
+            try {
+                return JSON.parse(localStorage.getItem('classroom_students_v1')) || [
+                    { name: "Ana Silva", currentLevel: 12, completedPhases: 11, score: 550 },
+                    { name: "Bruno Costa", currentLevel: 5, completedPhases: 4, score: 200 },
+                    { name: "Carla Souza", currentLevel: 25, completedPhases: 24, score: 1200 }
+                ];
+            } catch(e) { return []; }
+        }
+
+        function saveStudentsData(data) {
+            localStorage.setItem('classroom_students_v1', JSON.stringify(data));
+        }
+
+        function syncProgressToTeacher() {
+            if (!currentUser || currentUser.role !== 'student') return;
+            
+            let students = getStudentsData();
+            let index = students.findIndex(s => s.name.toLowerCase() === currentUser.name.toLowerCase());
+            
+            const completedCount = Object.keys(completedLevels).length;
+            const scoreData = completedCount * 50;
+
+            if (index >= 0) {
+                students[index].currentLevel = unlockedLevel;
+                students[index].completedPhases = completedCount;
+                students[index].score = scoreData;
+            } else {
+                students.push({
+                    name: currentUser.name,
+                    currentLevel: unlockedLevel,
+                    completedPhases: completedCount,
+                    score: scoreData
+                });
+            }
+            saveStudentsData(students);
+        }
+
+        function loadStudentProgress() {
+            try {
+                const savedMax = localStorage.getItem(`escape_unlocked_${currentUser.name}`);
+                if (savedMax) unlockedLevel = parseInt(savedMax) || 1;
+
+                const savedCompleted = localStorage.getItem(`escape_completed_${currentUser.name}`);
+                if (savedCompleted) completedLevels = JSON.parse(savedCompleted) || {};
+            } catch(e) {}
+        }
+
+        function saveStudentProgress() {
+            if (!currentUser) return;
+            try {
+                localStorage.setItem(`escape_unlocked_${currentUser.name}`, unlockedLevel);
+                localStorage.setItem(`escape_completed_${currentUser.name}`, JSON.stringify(completedLevels));
+                syncProgressToTeacher();
+            } catch(e) {}
+        }
+
+        // RENDERIZAÇÃO DO DASHBOARD DO PROFESSOR
+        function renderTeacherDashboard() {
+            const students = getStudentsData();
+            const tbody = document.getElementById('teacher-students-tbody');
+            tbody.innerHTML = '';
+
+            let totalCompleted = 0;
+            let totalScore = 0;
+
+            students.forEach((student, index) => {
+                const pct = Math.round((student.completedPhases / 50) * 100);
+                totalCompleted += student.completedPhases;
+                totalScore += student.score;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-sky-50/50 transition">
+                        <td class="p-3 font-bold text-slate-800">${student.name}</td>
+                        <td class="p-3 font-mono">Fase #${student.currentLevel}</td>
+                        <td class="p-3 font-bold text-sky-700">${student.completedPhases} / 50</td>
+                        <td class="p-3 font-mono text-emerald-600 font-bold">${student.score} pts</td>
+                        <td class="p-3">
+                            <div class="w-full bg-slate-200 rounded-full h-2 max-w-[100px] inline-block mr-2">
+                                <div class="bg-sky-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="font-bold">${pct}%</span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="resetStudentData(${index})" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded font-bold">
+                                Reiniciar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('dash-total-students').innerText = students.length;
+            document.getElementById('dash-completed-phases').innerText = totalCompleted;
+            const avgPct = students.length ? Math.round((totalCompleted / (students.length * 50)) * 100) : 0;
+            document.getElementById('dash-avg-score').innerText = `${avgPct}%`;
+        }
+
+        function resetStudentData(index) {
+            let students = getStudentsData();
+            students.splice(index, 1);
+            saveStudentsData(students);
+            renderTeacherDashboard();
+        }
+
+        function clearClassData() {
+            if (confirm("Deseja apagar todos os alunos cadastrados nesta turma?")) {
+                saveStudentsData([]);
+                renderTeacherDashboard();
+            }
+        }
+
+        function exportDataCSV() {
+            const students = getStudentsData();
+            let csv = "Nome,Fase Atual,Fases Concluidas,Pontuacao,Progresso (%)\n";
+            students.forEach(s => {
+                csv += `"${s.name}",${s.currentLevel},${s.completedPhases},${s.score},${Math.round((s.completedPhases/50)*100)}%\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'relatorio_desempenho_turma.csv');
+            a.click();
+        }
+
+        // LÓGICA DO JOGO / FASES
+        function generateRandomQuestionsForLevel(levelNum) {
+            let questions = [];
+            let templateIndices = [0, 1, 2, 3, 4];
+            templateIndices.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < 5; i++) {
+                const templateFn = QUESTION_TEMPLATES[templateIndices[i]];
+                const q = templateFn(levelNum);
+                questions.push(q);
+            }
+            return questions;
+        }
+
+        function get5DigitCode(questions) {
+            return questions.map(q => q.codeDigit.toString()).join('');
+        }
+
+        function renderLevelGrid() {
+            const grid = document.getElementById('levels-grid');
+            grid.innerHTML = '';
+
+            let completedCount = Object.keys(completedLevels).length;
+            document.getElementById('overall-progress-text').innerText = `${completedCount} / 50`;
+
+            for (let i = 1; i <= 50; i++) {
+                const isUnlocked = i <= unlockedLevel;
+                const isCompleted = completedLevels[i] === true;
+                
+                let btnClass = "";
+                let iconStatus = "";
+
+                if (isCompleted) {
+                    btnClass = "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100 shadow-sm font-bold";
+                    iconStatus = "⭐";
+                } else if (isUnlocked) {
+                    btnClass = "bg-white border-sky-300 text-sky-950 hover:bg-sky-50 shadow-sm font-bold ring-1 ring-sky-200";
+                    iconStatus = "▶";
+                } else {
+                    btnClass = "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60 font-semibold";
+                    iconStatus = "🔒";
+                }
+
+                grid.innerHTML += `
+                    <button onclick="${isUnlocked ? `startLevel(${i})` : ''}" ${!isUnlocked ? 'disabled' : ''} class="aspect-square flex flex-col items-center justify-center p-1 sm:p-2 rounded-xl border text-center transition-all ${btnClass}">
+                        <span class="text-[10px] font-mono text-slate-400">#${i}</span>
+                        <span class="font-orbitron font-extrabold text-sm sm:text-lg">${i}</span>
+                        <span class="text-[10px] mt-0.5">${iconStatus}</span>
+                    </button>
+                `;
+            }
+        }
+
+        function startLevel(levelNum) {
+            currentLevel = levelNum;
+            currentQuestionIndex = 0;
+            currentLevelQuestions = generateRandomQuestionsForLevel(levelNum);
+            revealedDigits = ["?", "?", "?", "?", "?"];
+
+            showScreen('screen-game');
+
+            document.getElementById('level-title-badge').innerText = `FASE ${currentLevel} DE 50`;
+            document.getElementById('card-question').classList.remove('hidden');
+            document.getElementById('card-secret').classList.add('hidden');
+            document.getElementById('secret-code-input').value = '';
+            document.getElementById('secret-feedback-msg').innerText = '';
+
+            loadQuestionStep();
+
+            document.getElementById('btn-prev-level').disabled = (currentLevel <= 1);
+            document.getElementById('btn-next-level').disabled = (currentLevel >= unlockedLevel);
+        }
+
+        function loadQuestionStep() {
+            const q = currentLevelQuestions[currentQuestionIndex];
+
+            for (let i = 0; i < 5; i++) {
+                const pill = document.getElementById(`step-pill-${i}`);
+                const digitText = revealedDigits[i] !== "?" ? ` [${revealedDigits[i]}]` : "";
+                
+                if (i < currentQuestionIndex) {
+                    pill.className = "px-3 py-1.5 rounded-lg border bg-sky-100 text-sky-800 border-sky-300 font-bold";
+                    pill.innerText = `Q${i + 1}:${digitText}`;
+                } else if (i === currentQuestionIndex) {
+                    pill.className = "px-3 py-1.5 rounded-lg border bg-sky-600 text-white border-sky-700 font-bold shadow-sm ring-2 ring-sky-200";
+                    pill.innerText = `Q${i + 1}`;
+                } else {
+                    pill.className = "px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200";
+                    pill.innerText = `Q${i + 1}`;
+                }
+            }
+            document.getElementById('step-pill-5').className = "px-3 py-1.5 rounded-lg border bg-slate-100 text-slate-400 border-slate-200 flex items-center gap-1";
+
+            document.getElementById('question-text').innerHTML = `<strong>Q${currentQuestionIndex + 1}:</strong> ${q.text}`;
+            document.getElementById('user-input').value = '';
+            document.getElementById('hint-box').classList.add('hidden');
+            document.getElementById('hint-text').innerText = q.hint;
+            document.getElementById('level-counter-footer').innerText = `Fase ${currentLevel} - Questão ${currentQuestionIndex + 1} de 5`;
+
+            const axisBadge = document.getElementById('axis-badge');
+            axisBadge.innerText = `${q.icon} EIXO: ${q.axis.toUpperCase()}`;
+        }
+
+        function toggleHint() {
+            document.getElementById('hint-box').classList.toggle('hidden');
+        }
+
+        function submitAnswer() {
+            const input = document.getElementById('user-input').value.trim();
+            const q = currentLevelQuestions[currentQuestionIndex];
+
+            if (!input) {
+                showFeedback('⚠️ Digite uma resposta antes de verificar!', false);
+                return;
+            }
+
+            const numericUser = parseFloat(input.replace(',', '.'));
+
+            if (Math.abs(numericUser - q.answer) < 0.01) {
+                revealedDigits[currentQuestionIndex] = q.codeDigit.toString();
+                showFeedback(`✅ Correto! ${currentQuestionIndex + 1}º ALGARISMO DO CÓDIGO: [ ${q.codeDigit} ]`, true);
+
+                setTimeout(() => {
+                    if (currentQuestionIndex < 4) {
+                        currentQuestionIndex++;
+                        loadQuestionStep();
+                    } else {
+                        const finalCode = get5DigitCode(currentLevelQuestions);
+                        document.getElementById('card-question').classList.add('hidden');
+                        document.getElementById('card-secret').classList.remove('hidden');
+                        document.getElementById('dynamic-code-display').innerText = `${finalCode[0]}  ${finalCode[1]}  ${finalCode[2]}  ${finalCode[3]}  ${finalCode[4]}`;
+                        document.getElementById('step-pill-5').className = "px-3 py-1.5 rounded-lg border bg-sky-600 text-white border-sky-700 font-bold shadow-sm";
+                    }
+                }, 1100);
+
+            } else {
+                showFeedback('❌ RESPOSTA INCORRETA! Tente novamente com atenção...', false);
+            }
+        }
+
+        function submitSecretCode() {
+            const inputCode = document.getElementById('secret-code-input').value.trim();
+            const msgEl = document.getElementById('secret-feedback-msg');
+            const targetCode = get5DigitCode(currentLevelQuestions);
+
+            if (inputCode === targetCode) {
+                completedLevels[currentLevel] = true;
+
+                if (currentLevel === unlockedLevel && unlockedLevel < 50) {
+                    unlockedLevel++;
+                }
+
+                saveStudentProgress();
+                msgEl.innerText = '🔓 CÓDIGO CORRETO! Fase Liberada!';
+                msgEl.className = 'text-sm font-bold text-center text-emerald-600';
+
+                setTimeout(() => {
+                    if (currentLevel < 50) {
+                        startLevel(currentLevel + 1);
+                    } else {
+                        showScreen('screen-victory');
+                    }
+                }, 1300);
+            } else {
+                msgEl.innerText = '❌ Código Incorreto! Confira a sequência de 5 algarismos anotada.';
+                msgEl.className = 'text-sm font-bold text-center text-rose-600';
+            }
+        }
+
+        function showFeedback(text, isSuccess) {
+            const el = document.getElementById('feedback-msg');
+            el.innerText = text;
+            el.className = `text-sm font-bold transition-all duration-300 ${isSuccess ? 'text-emerald-700' : 'text-rose-600'}`;
+        }
+
+        function prevLevel() {
+            if (currentLevel > 1) startLevel(currentLevel - 1);
+        }
+
+        function nextLevel() {
+            if (currentLevel < unlockedLevel) startLevel(currentLevel + 1);
+        }
+
+        function confirmRestartPhase() {
+            if (confirm("Deseja reiniciar a fase atual?")) {
+                startLevel(currentLevel);
+            }
+        }
+
+        // INICIALIZAÇÃO DA APLICAÇÃO
+        window.onload = function() {
+            showScreen('screen-login');
+        };
+    </script>
 </body>
 </html>
